@@ -77,6 +77,7 @@ typedef struct url {
     int port;
     char * path; /*get path*/
     char * name; /*file name*/
+	char * header;
 #ifdef USE_AUTH
     char * auth; /*encoded auth data*/
 #endif
@@ -714,6 +715,8 @@ static void print_url(FILE *f, const struct_url * url)
     fprintf(f, "host name: \t%s\n", url->host);
     fprintf(f, "port number: \t%d\n", url->port);
     fprintf(f, "protocol: \t%s\n", protocol);
+    if (url->header)
+        fprintf(f, "header: \t%s\n", url->header);
     fprintf(f, "request path: \t%s\n", url->path);
 #ifdef USE_AUTH
     fprintf(f, "auth data: \t%s\n", url->auth ? "(present)" : "(null)");
@@ -809,8 +812,9 @@ static void usage(void)
 #ifdef USE_SSL
                 "[-a file] [-d n] [-5] [-2] "
 #endif
-                "[-f] [-t timeout] [-r] url mount-parameters\n\n", argv0);
+                "[-f] [-h] [-t timeout] [-r] url mount-parameters\n\n", argv0);
         fprintf(stderr, "\t -c \tuse console for standard input/output/error (default: %s)\n", CONSOLE);
+        fprintf(stderr, "\t -h \tadditional some HTTP header, which will be added to all requests \n");
 #ifdef USE_SSL
         fprintf(stderr, "\t -a \tCA file used to verify server certificate\n");
         fprintf(stderr, "\t -d \tGNUTLS debug level\n");
@@ -859,6 +863,9 @@ int main(int argc, char *argv[])
         char * arg = argv[1]; shift;
         while (*++arg){
             switch (*arg){
+                case 'h': main_url.header = argv[1];
+                          shift;
+                          break;
                 case 'c': if( *(argv[1]) != '-' ) {
                               fork_terminal = argv[1]; shift;
                           }else{
@@ -1418,6 +1425,8 @@ exchange(struct_url *url, char * buf, const char * method,
             method, url->path, url->host);
     bytes += (size_t)snprintf(buf + bytes, HEADER_SIZE - bytes,
             "User-Agent: %s %s\r\n", __FILE__, VERSION);
+	if (url->header)
+        bytes += (size_t)snprintf(buf + bytes, HEADER_SIZE - bytes, "%s\r\n", url->header);
     if (range) bytes += (size_t)snprintf(buf + bytes, HEADER_SIZE - bytes,
                 "Range: bytes=%" PRIdMAX "-%" PRIdMAX "\r\n", (intmax_t)start, (intmax_t)end);
 #ifdef USE_AUTH
