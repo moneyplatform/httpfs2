@@ -949,6 +949,7 @@ int main(int argc, char *argv[])
 
     if (fuse_parse_cmdline(&args, &mountpoint, NULL, NULL) != -1 &&
             (ch = fuse_mount(mountpoint, &args)) != NULL) {
+        fprintf(stderr, "resource ready\n");
         /* try to fork at some point where the setup is mostly done */
         /* FIXME try to close std* and the like ? */
         if(do_fork) fork_res = fork();
