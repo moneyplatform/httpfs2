@@ -44,6 +44,8 @@
 #include <time.h>
 #include <stddef.h>
 #include <inttypes.h>
+#include <locale.h>
+#include <time.h>
 
 #ifdef USE_THREAD
 #include <pthread.h>
@@ -854,6 +856,7 @@ int main(int argc, char *argv[])
 {
     char * fork_terminal = CONSOLE;
     int do_fork = 1;
+    setlocale(LC_ALL, "en_US.UTF-8");
     putenv("TZ=");/*UTC*/
     argv0 = argv[0];
     init_url(&main_url);
