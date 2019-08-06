@@ -1391,8 +1391,9 @@ parse_header(struct_url *url, const char * buf, size_t bytes,
         }
         if( mempref(ptr, date, (size_t)(end - ptr), 0) ){
             memset(&tm, 0, sizeof(tm));
+            /*  why %Z does not recognize GMT??? */
             if(!strptime(ptr + strlen(date),
-                        "%n%a, %d %b %Y %T %Z", &tm)){
+                        "%n%a, %d %b %Y %T GMT", &tm)){
                 plain_report("invalid time",
                         method, ptr + strlen(date),
                         (size_t)(end - ptr) - strlen(date)) ;
