@@ -189,7 +189,7 @@ static char * b64_encode(unsigned const char* ptr, long len) {
  * The FUSE operations originally ripped from the hello_ll sample.
  */
 
-static int httpfs_stat(fuse_ino_t ino, struct stat *stbuf)
+static long httpfs_stat(fuse_ino_t ino, struct stat *stbuf)
 {
     stbuf->st_ino = ino;
     switch (ino) {
@@ -202,7 +202,7 @@ static int httpfs_stat(fuse_ino_t ino, struct stat *stbuf)
                     struct_url * url = thread_setup();
                     stbuf->st_mode = S_IFREG | 0444;
                     stbuf->st_nlink = 1;
-                    return (int) get_stat(url, stbuf);
+                    return (long) get_stat(url, stbuf);
                 }; break;
 
         default:
