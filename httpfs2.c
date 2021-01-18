@@ -326,7 +326,12 @@ static void httpfs_read(fuse_req_t req, fuse_ino_t ino, size_t size,
 
     assert(ino == 2);
 
-    assert(url->file_size >= off);
+    if (off > url->file_size) {
+	// Access beyond the border of the file should not crush the program. 
+        // Notice: we can't write to log from here
+        fuse_reply_buf(req, NULL,  0);
+        return;
+    }
 
     size=min(size, (size_t)(url->file_size - off));
 
